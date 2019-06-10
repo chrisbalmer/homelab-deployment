@@ -1,0 +1,10 @@
+---
+- name: Build Out the Environment
+  hosts: terraform
+  connection: local
+  tasks:
+  - name: Test
+    ping:
+  - name: Debug
+    debug:
+      var: some_var

@@ -1,0 +1,4 @@
+[submodule ".devcontainer"]
+	path = .devcontainer
+	url = https://github.com/chrisbalmer/vscode-rc-ansible.git
+	branch = master
