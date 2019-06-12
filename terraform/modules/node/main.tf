@@ -53,7 +53,7 @@ resource "vsphere_virtual_machine" "nodes" {
     template_uuid = "${data.vsphere_virtual_machine.node_template.id}"
   }
 
-  extra_config {
+  extra_config = {
     "guestinfo.cloud-init.config.data" = "${base64encode("${data.template_file.node.*.rendered[count.index]}")}"
     "guestinfo.cloud-init.data.encoding" = "base64"
   }
@@ -64,7 +64,7 @@ data "template_file" "node" {
   count = "${var.node_count}"
   template = "${file("${path.module}/files/cloud-config.tpl")}"
 
-  vars {
+  vars = {
     hostname = "${var.node_prefix}${var.node_name}-${count.index}"
     ip_address = "${var.node_ips[count.index]}"
     gateway = "${var.node_gateway}"
@@ -78,5 +78,5 @@ data "template_file" "node" {
 resource "vsphere_compute_cluster_vm_anti_affinity_rule" "node_anti_affinity" {
   name                = "${var.node_prefix}node-anti-affinity"
   compute_cluster_id  = "${data.vsphere_compute_cluster.node_cluster.id}"
-  virtual_machine_ids = ["${vsphere_virtual_machine.nodes.*.id}"]
+  virtual_machine_ids = "${vsphere_virtual_machine.nodes.*.id}"
 }

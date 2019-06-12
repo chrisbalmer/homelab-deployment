@@ -1,11 +1,11 @@
 ---
-- name: Build Out the Environment
+- name: Cleanup the Environment
   hosts: terraform
   connection: local
   tasks:
-  - name: Run terraform apply
+  - name: Run terraform destroy
     terraform:
       project_path: './terraform/'
       variables: "{{ terraform_variables }}"
       force_init: true
-      state: present
+      state: absent

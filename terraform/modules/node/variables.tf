@@ -30,7 +30,7 @@ variable "node_count" {
 }
 variable "node_prefix" {
   description = "The prefix for the full node name, i.e. dev, prod, etc"
-  default     = "ops"
+  default     = "ops-"
 }
 variable "node_name" {
   description = "The name of the node, i.e. worker, master, etc"
