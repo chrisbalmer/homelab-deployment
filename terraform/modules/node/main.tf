@@ -121,8 +121,8 @@ data "template_file" "network_config" {
   template = "${file("${path.module}/files/${var.network_config_template}")}"
 }
 
-# TODO: Make this optional, not all groups will need this
 resource "vsphere_compute_cluster_vm_anti_affinity_rule" "node_anti_affinity" {
+  count               = "${var.anti_affinity_enabled ? 1 : 0}"
   name                = "${var.node_prefix}${var.node_name}-anti-affinity"
   compute_cluster_id  = "${data.vsphere_compute_cluster.node_cluster.id}"
   virtual_machine_ids = "${vsphere_virtual_machine.nodes.*.id}"
