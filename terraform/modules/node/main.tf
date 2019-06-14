@@ -32,9 +32,11 @@ resource "vsphere_virtual_machine" "nodes" {
   name = "${var.node_prefix}${var.node_name}-${count.index}"
   datastore_id = "${data.vsphere_datastore.node_datastore.id}"
   resource_pool_id = "${data.vsphere_resource_pool.node_pool.id}"
-  num_cpus = 2
-  memory = 4096
-  guest_id = "${var.node_guest_id}"
+  num_cpus = "${var.node_cpus}"
+  memory = "${var.node_memory}"
+  guest_id = "${data.vsphere_virtual_machine.node_template.guest_id}"
+  scsi_type = "${data.vsphere_virtual_machine.node_template.scsi_type}"
+  annotation = "Created on blah" #TODO: Add info here, date and source template
 
   disk {
     label            = "${var.node_prefix}${var.node_name}-${count.index}.vmdk"
@@ -47,22 +49,49 @@ resource "vsphere_virtual_machine" "nodes" {
     network_id = "${data.vsphere_network.node_network.id}"
   }
 
-
+  
 
   clone {
     template_uuid = "${data.vsphere_virtual_machine.node_template.id}"
+    #TODO: Complete this for non-cloud-init enabled templates like Windows
+    dynamic "customize" { 
+      for_each = var.cloud_init ? [] : [1]
+      content {
+        linux_options {
+          host_name = "${var.node_prefix}${var.node_name}-${count.index}"
+          domain    = "${var.node_domain_name}"
+        }
+
+        network_interface {
+          ipv4_address = "${var.node_ips[count.index]}"
+          #ipv4_netmask = 24
+        }
+
+        ipv4_gateway = "${var.node_gateway}"
+      }
+    }
   }
 
-  extra_config = {
-    "guestinfo.cloud-init.config.data" = "${base64encode("${data.template_file.node.*.rendered[count.index]}")}"
-    "guestinfo.cloud-init.data.encoding" = "base64"
-  }
+  # If using cloud-init and using a custom cloud-init setup then
+  extra_config = var.cloud_init ? (var.cloud_init_custom ? {
+    "guestinfo.${var.cloud_config_guestinfo_path}" = "${base64encode("${data.template_file.userdata.*.rendered[count.index]}")}"
+    "guestinfo.${var.cloud_config_guestinfo_encoding_path}" = "base64"
+  
+  # Else if using cloud-init and not using a custom cloud-init setup then
+  } : {
+    "guestinfo.userdata" = "${base64encode("${data.template_file.userdata.*.rendered[count.index]}")}"
+    "guestinfo.userdata.encoding" = "base64"
+    "guestinfo.metadata" = "${base64encode("${data.template_file.metadata.*.rendered[count.index]}")}"
+    "guestinfo.metadata.encoding" = "base64"
+  
+  # Else we aren't using cloud-init so don't supply anything
+  }) : {}
 }
 
 
-data "template_file" "node" {
+data "template_file" "userdata" {
   count = "${var.node_count}"
-  template = "${file("${path.module}/files/cloud-config.tpl")}"
+  template = "${file("${path.module}/files/${var.cloud_config_template}")}"
 
   vars = {
     hostname = "${var.node_prefix}${var.node_name}-${count.index}"
@@ -72,11 +101,29 @@ data "template_file" "node" {
     network_interface = "${var.node_network_interface}"
     initial_key = "${var.node_initial_key}"
     domain_name = "${var.node_domain_name}"
+    cloud_user  = "${var.cloud_user}"
+    cloud_pass  = "${var.cloud_pass}"
   }
 }
 
+data "template_file" "metadata" {
+  count = "${var.node_count}"
+  template = "${file("${path.module}/files/${var.metadata_template}")}"
+
+  vars = {
+    hostname       = "${var.node_prefix}${var.node_name}-${count.index}"
+    network_config = "${base64encode("${data.template_file.network_config.*.rendered[count.index]}")}"
+  }
+}
+
+data "template_file" "network_config" {
+  count = "${var.node_count}"
+  template = "${file("${path.module}/files/${var.network_config_template}")}"
+}
+
+# TODO: Make this optional, not all groups will need this
 resource "vsphere_compute_cluster_vm_anti_affinity_rule" "node_anti_affinity" {
-  name                = "${var.node_prefix}node-anti-affinity"
+  name                = "${var.node_prefix}${var.node_name}-anti-affinity"
   compute_cluster_id  = "${data.vsphere_compute_cluster.node_cluster.id}"
   virtual_machine_ids = "${vsphere_virtual_machine.nodes.*.id}"
 }

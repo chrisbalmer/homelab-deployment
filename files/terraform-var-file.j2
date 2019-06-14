@@ -1,0 +1,8 @@
+vsphere_user = "{{ lookup('onepassword', 'ops-vcenter-1', field='username', vault='homelab') }}"
+vsphere_password = "{{ lookup('onepassword', 'ops-vcenter-1', field='password', vault='homelab') }}"
+vsphere_server = "ops-vcenter-1.farm.oakops.io"
+ssh_public_key = "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
+splunk = {
+  cloud_user = "ansible"
+  cloud_pass = "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
+}

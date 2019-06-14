@@ -3,9 +3,27 @@
   hosts: terraform
   connection: local
   tasks:
-  - name: Run terraform apply
-    terraform:
-      project_path: './terraform/'
-      variables: "{{ terraform_variables }}"
-      force_init: true
-      state: present
+  - block:
+    - name: Create temporary terraform variable file
+      tempfile:
+        state: file
+        suffix: .tfvars
+      register: tmp_vars
+
+    - name: Populate temporary terraform variable file
+      template:
+        src: files/terraform-var-file.j2
+        dest: "{{ tmp_vars.path }}"
+
+    - name: Run terraform apply
+      terraform:
+        project_path: './terraform/'
+        variables_file: "{{ tmp_vars.path }}"
+        force_init: true
+        state: present
+
+    always:
+      - name: Cleanup temporary terraform variable file
+        file:
+          path: "{{ tmp_vars.path }}"
+          state: absent

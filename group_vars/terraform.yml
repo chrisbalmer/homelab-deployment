@@ -1,6 +1,0 @@
----
-terraform_variables:
-  vsphere_user: "{{ lookup('onepassword', 'ops-vcenter-1', field='username', vault='homelab') }}"
-  vsphere_password: "{{ lookup('onepassword', 'ops-vcenter-1', field='password', vault='homelab') }}"
-  vsphere_server: "ops-vcenter-1.farm.oakops.io"
-  ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='Public', field='ssh public key', vault='homelab') }}"
