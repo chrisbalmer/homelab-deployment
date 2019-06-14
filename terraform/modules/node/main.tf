@@ -28,15 +28,15 @@ data "vsphere_virtual_machine" "node_template" {
 }
 
 resource "vsphere_virtual_machine" "nodes" {
-  count = "${var.node_count}"
-  name = "${var.node_prefix}${var.node_name}-${count.index}"
-  datastore_id = "${data.vsphere_datastore.node_datastore.id}"
+  count            = "${var.node_count}"
+  name             = "${var.node_prefix}${var.node_name}-${count.index}"
+  datastore_id     = "${data.vsphere_datastore.node_datastore.id}"
   resource_pool_id = "${data.vsphere_resource_pool.node_pool.id}"
-  num_cpus = "${var.node_cpus}"
-  memory = "${var.node_memory}"
-  guest_id = "${data.vsphere_virtual_machine.node_template.guest_id}"
-  scsi_type = "${data.vsphere_virtual_machine.node_template.scsi_type}"
-  annotation = "Created on blah" #TODO: Add info here, date and source template
+  num_cpus         = "${var.node_cpus}"
+  memory           = "${var.node_memory}"
+  guest_id         = "${data.vsphere_virtual_machine.node_template.guest_id}"
+  scsi_type        = "${data.vsphere_virtual_machine.node_template.scsi_type}"
+  annotation       = "Created on blah" #TODO: Add info here, date and source template
 
   disk {
     label            = "${var.node_prefix}${var.node_name}-${count.index}.vmdk"
@@ -49,12 +49,12 @@ resource "vsphere_virtual_machine" "nodes" {
     network_id = "${data.vsphere_network.node_network.id}"
   }
 
-  
+
 
   clone {
     template_uuid = "${data.vsphere_virtual_machine.node_template.id}"
     #TODO: Complete this for non-cloud-init enabled templates like Windows
-    dynamic "customize" { 
+    dynamic "customize" {
       for_each = var.cloud_init ? [] : [1]
       content {
         linux_options {
@@ -74,40 +74,40 @@ resource "vsphere_virtual_machine" "nodes" {
 
   # If using cloud-init and using a custom cloud-init setup then
   extra_config = var.cloud_init ? (var.cloud_init_custom ? {
-    "guestinfo.${var.cloud_config_guestinfo_path}" = "${base64encode("${data.template_file.userdata.*.rendered[count.index]}")}"
+    "guestinfo.${var.cloud_config_guestinfo_path}"          = "${base64encode("${data.template_file.userdata.*.rendered[count.index]}")}"
     "guestinfo.${var.cloud_config_guestinfo_encoding_path}" = "base64"
-  
-  # Else if using cloud-init and not using a custom cloud-init setup then
-  } : {
-    "guestinfo.userdata" = "${base64encode("${data.template_file.userdata.*.rendered[count.index]}")}"
+
+    # Else if using cloud-init and not using a custom cloud-init setup then
+    } : {
+    "guestinfo.userdata"          = "${base64encode("${data.template_file.userdata.*.rendered[count.index]}")}"
     "guestinfo.userdata.encoding" = "base64"
-    "guestinfo.metadata" = "${base64encode("${data.template_file.metadata.*.rendered[count.index]}")}"
+    "guestinfo.metadata"          = "${base64encode("${data.template_file.metadata.*.rendered[count.index]}")}"
     "guestinfo.metadata.encoding" = "base64"
-  
-  # Else we aren't using cloud-init so don't supply anything
+
+    # Else we aren't using cloud-init so don't supply anything
   }) : {}
 }
 
 
 data "template_file" "userdata" {
-  count = "${var.node_count}"
+  count    = "${var.node_count}"
   template = "${file("${path.module}/files/${var.cloud_config_template}")}"
 
   vars = {
-    hostname = "${var.node_prefix}${var.node_name}-${count.index}"
-    ip_address = "${var.node_ips[count.index]}"
-    gateway = "${var.node_gateway}"
-    dns = "${jsonencode(split(",", var.node_dns))}"
+    hostname          = "${var.node_prefix}${var.node_name}-${count.index}"
+    ip_address        = "${var.node_ips[count.index]}"
+    gateway           = "${var.node_gateway}"
+    dns               = "${jsonencode(split(",", var.node_dns))}"
     network_interface = "${var.node_network_interface}"
-    initial_key = "${var.node_initial_key}"
-    domain_name = "${var.node_domain_name}"
-    cloud_user  = "${var.cloud_user}"
-    cloud_pass  = "${var.cloud_pass}"
+    initial_key       = "${var.node_initial_key}"
+    domain_name       = "${var.node_domain_name}"
+    cloud_user        = "${var.cloud_user}"
+    cloud_pass        = "${var.cloud_pass}"
   }
 }
 
 data "template_file" "metadata" {
-  count = "${var.node_count}"
+  count    = "${var.node_count}"
   template = "${file("${path.module}/files/${var.metadata_template}")}"
 
   vars = {
@@ -117,7 +117,7 @@ data "template_file" "metadata" {
 }
 
 data "template_file" "network_config" {
-  count = "${var.node_count}"
+  count    = "${var.node_count}"
   template = "${file("${path.module}/files/${var.network_config_template}")}"
 }
 

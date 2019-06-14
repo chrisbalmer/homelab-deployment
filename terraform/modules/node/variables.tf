@@ -57,15 +57,15 @@ variable "node_ips" {
 }
 variable "node_gateway" {
   description = "Gateway for the node."
-  default = "172.21.19.1"
+  default     = "172.21.19.1"
 }
 variable "node_dns" {
   description = "DNS servers for the node."
-  default = "172.21.14.2,172.21.14.4"
+  default     = "172.21.14.2,172.21.14.4"
 }
 variable "node_network_interface" {
   description = "Network interface used by the node."
-  default = "ens160"
+  default     = "ens160"
 }
 variable "node_initial_key" {
   description = "The initial SSH key to allow access to the node."
@@ -127,4 +127,9 @@ variable "cloud_user" {
 variable "cloud_pass" {
   description = "Initial user hashed password for the node."
   default     = ""
+}
+
+variable "anti_affinity_enabled" {
+  description = "Whether or not to enable the anti affinity rule for these nodes."
+  default     = false
 }

@@ -1,0 +1,29 @@
+{% for node in nodes %}
+module "{{ node.name }}" {
+  source                  = "./modules/node/"
+  vsphere_network         = "{{ node.network }}"
+  vsphere_template        = "{{ node.template }}"
+  node_count              = "{{ node.count }}"
+  node_initial_key        = "{{ node.ssh_public_key }}"
+  node_name               = "{{ node.name }}"
+  node_network_interface  = "{{ node.interface }}"
+  node_ips                = {{ node.ips | replace("'", "\"")}}
+  node_gateway            = "{{ node.gateway }}"
+  cloud_init              = {{ node.cloud_init }}
+  cloud_init_custom       = {{ node.cloud_init_custom }}
+  cloud_config_template   = "{{ node.cloud_config_template }}"
+{% if node.metadata_template | default(0) %}
+  metadata_template       = "{{ node.metadata_template }}"
+{% endif %}
+{% if node.network_config_template | default(0) %}
+  network_config_template = "{{ node.network_config_template }}"
+{% endif %}
+  anti_affinity_enabled   = {{ node.anti_affinity_enabled | default(false) }}
+{% if node.cloud_user | default(0) %}
+  cloud_user              = "{{ node.cloud_user }}"
+{% endif %}
+{% if node.cloud_pass | default(0) %}
+  cloud_pass              = "{{ node.cloud_pass }}"
+{% endif %}
+}
+{% endfor %}

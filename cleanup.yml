@@ -12,8 +12,13 @@
 
     - name: Populate temporary terraform variable file
       template:
-        src: files/terraform-var-file.j2
+        src: files/terraform.tfvars.j2
         dest: "{{ tmp_vars.path }}"
+
+    - name: Populate terraform nodes file
+      template:
+        src: files/nodes.tf.j2
+        dest: "./terraform/nodes.tf"
 
     - name: Run terraform destroy
       terraform:
