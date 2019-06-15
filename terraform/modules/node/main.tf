@@ -119,6 +119,12 @@ data "template_file" "metadata" {
 data "template_file" "network_config" {
   count    = "${var.node_count}"
   template = "${file("${path.module}/files/${var.network_config_template}")}"
+
+  vars = {
+    ip_address        = "${var.node_ips[count.index]}"
+    gateway           = "${var.node_gateway}"
+    network_interface = "${var.node_network_interface}"
+  }
 }
 
 resource "vsphere_compute_cluster_vm_anti_affinity_rule" "node_anti_affinity" {
