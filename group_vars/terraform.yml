@@ -1,3 +1,9 @@
+terraform_nodes_path: "./terraform/nodes.tf"
+terraform_variables:
+  vsphere_user: "{{ lookup('onepassword', 'ops-vcenter-1', field='username', vault='homelab') }}"
+  vsphere_password: "{{ lookup('onepassword', 'ops-vcenter-1', field='password', vault='homelab') }}"
+  vsphere_server: "ops-vcenter-1.farm.oakops.io"
+
 nodes:
   - name: "splunk-idx"
     count: 3

@@ -4,31 +4,20 @@
   connection: local
   tasks:
   - block:
-    - name: Create temporary terraform variable file
-      tempfile:
-        state: file
-        suffix: .tfvars
-      register: tmp_vars
-
-    - name: Populate temporary terraform variable file
-      template:
-        src: files/terraform.tfvars.j2
-        dest: "{{ tmp_vars.path }}"
-
     - name: Populate terraform nodes file
       template:
         src: files/nodes.tf.j2
-        dest: "./terraform/nodes.tf"
+        dest: "{{ terraform_nodes_path }}"
 
     - name: Run terraform destroy
       terraform:
         project_path: './terraform/'
-        variables_file: "{{ tmp_vars.path }}"
+        variables: "{{ terraform_variables }}"
         force_init: true
         state: absent
 
     always:
-      - name: Cleanup temporary terraform variable file
+      - name: Cleanup terraform nodes file
         file:
-          path: "{{ tmp_vars.path }}"
+          path: "{{ terraform_nodes_path }}"
           state: absent

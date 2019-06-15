@@ -49,8 +49,6 @@ resource "vsphere_virtual_machine" "nodes" {
     network_id = "${data.vsphere_network.node_network.id}"
   }
 
-
-
   clone {
     template_uuid = "${data.vsphere_virtual_machine.node_template.id}"
     #TODO: Complete this for non-cloud-init enabled templates like Windows
@@ -87,7 +85,6 @@ resource "vsphere_virtual_machine" "nodes" {
     # Else we aren't using cloud-init so don't supply anything
   }) : {}
 }
-
 
 data "template_file" "userdata" {
   count    = "${var.node_count}"
