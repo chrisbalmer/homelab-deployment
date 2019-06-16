@@ -1,0 +1,19 @@
+---
+{% set groups = dict() %}
+{% for node in nodes %}
+{% for group in node.groups %}
+{% if group not in groups %}
+{% set _dummy = groups.update({ group: [] }) %}
+{% endif %}
+{% for i in range(node.count) %}
+{% set _dummy = groups[group].append(node.prefix + node.name + '-' + i|string) %}
+{% endfor %}
+{% endfor %}
+{% endfor %}
+{% for group, members in groups.items() %}
+{{ group }}:
+{% for member in members %}
+  {{ member }}:
+{% endfor %}
+
+{% endfor %}

@@ -6,6 +6,7 @@ module "{{ node.name }}" {
   node_count              = "{{ node.count }}"
   node_initial_key        = "{{ node.ssh_public_key }}"
   node_name               = "{{ node.name }}"
+  node_prefix             = "{{ node.prefix }}"
   node_network_interface  = "{{ node.interface }}"
   node_ips                = {{ node.ips | replace("'", "\"")}}
   node_gateway            = "{{ node.gateway }}"

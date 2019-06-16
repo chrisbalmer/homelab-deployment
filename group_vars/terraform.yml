@@ -4,6 +4,8 @@ terraform_variables:
   vsphere_password: "{{ lookup('onepassword', 'ops-vcenter-1', field='password', vault='homelab') }}"
   vsphere_server: "ops-vcenter-1.farm.oakops.io"
 
+dynamic_inventory_path: "./dynamic-inventory.yml"
+
 nodes:
   - name: "splunk-idx"
     count: 3
@@ -24,6 +26,10 @@ nodes:
     cloud_config_template: "centos-cloud-config.tpl"
     metadata_template: "centos-metadata.tpl"
     network_config_template: "centos-network-config.tpl"
+    prefix: dev-
+    groups:
+      - splunk
+      - splunk_idx
 
   - name: "splunk-mn"
     count: 1
@@ -42,6 +48,10 @@ nodes:
     cloud_config_template: "centos-cloud-config.tpl"
     metadata_template: "centos-metadata.tpl"
     network_config_template: "centos-network-config.tpl"
+    prefix: dev-
+    groups:
+      - splunk
+      - splunk_mn
 
   - name: "splunk-sh"
     count: 1
@@ -60,6 +70,10 @@ nodes:
     cloud_config_template: "centos-cloud-config.tpl"
     metadata_template: "centos-metadata.tpl"
     network_config_template: "centos-network-config.tpl"
+    prefix: dev-
+    groups:
+      - splunk
+      - splunk_sh
 
   - name: "splunk-lic"
     count: 1
@@ -78,6 +92,10 @@ nodes:
     cloud_config_template: "centos-cloud-config.tpl"
     metadata_template: "centos-metadata.tpl"
     network_config_template: "centos-network-config.tpl"
+    prefix: dev-
+    groups:
+      - splunk
+      - splunk_lic
 
   - name: "splunk-mc"
     count: 1
@@ -96,6 +114,10 @@ nodes:
     cloud_config_template: "centos-cloud-config.tpl"
     metadata_template: "centos-metadata.tpl"
     network_config_template: "centos-network-config.tpl"
+    prefix: dev-
+    groups:
+      - splunk
+      - splunk_mc
 
   - name: "splunk-ds"
     count: 1
@@ -114,6 +136,10 @@ nodes:
     cloud_config_template: "centos-cloud-config.tpl"
     metadata_template: "centos-metadata.tpl"
     network_config_template: "centos-network-config.tpl"
+    prefix: dev-
+    groups:
+      - splunk
+      - splunk_ds
 
   - name: "worker"
     count: 3
@@ -132,6 +158,10 @@ nodes:
     cloud_config_template: "rancheros-cloud-config.tpl"
     cloud_config_guestinfo_path: "cloud-init.config.data"
     cloud_config_guestinfo_encoding_path: "cloud-init.data.encoding"
+    prefix: dev-
+    groups:
+      - kubernetes
+      - kubernetes_workers
 
   - name: "controller"
     count: 3
@@ -150,4 +180,8 @@ nodes:
     cloud_config_template: "rancheros-cloud-config.tpl"
     cloud_config_guestinfo_path: "cloud-init.config.data"
     cloud_config_guestinfo_encoding_path: "cloud-init.data.encoding"
+    prefix: dev-
+    groups:
+      - kubernetes
+      - kubernetes_controllers
 
