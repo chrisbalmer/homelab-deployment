@@ -9,11 +9,6 @@
         src: files/nodes.tf.j2
         dest: "{{ terraform_nodes_path }}"
 
-    - name: Populate terraform nodes file
-      template:
-        src: files/dynamic-inventory.yml.j2
-        dest: "{{ dynamic_inventory_path }}"
-
     - name: Run terraform apply
       terraform:
         project_path: './terraform/'
@@ -26,3 +21,6 @@
         file:
           path: "{{ terraform_nodes_path }}"
           state: absent
+
+- name: Splunk Configuration
+  import_playbook: playbooks/splunk.yml

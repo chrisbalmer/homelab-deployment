@@ -1,0 +1,10 @@
+- name: Splunk Deployment
+  hosts: splunk
+  become: yes
+  tasks:
+    - debug:
+        var: hostname
+    # - name: Download Splunk
+    #   get_url:
+    #     url: "{{ splunk_linux_build_url }}"
+    #     dest: "/tmp/{{ splunk_linux_filename }}"

@@ -6,9 +6,19 @@ One of the reasons for using Ansible as a wrapper around Terraform is the need t
 
 ## Terraform Variables
 
-For now this is using a bit of a hack, Terraform variables are populated in a Jinja2 template `files/terraform-var-file.j2`. This idea came from a GitHub issue with the Ansible Terraform module. You can't send an Ansible variable over and have it escaped correctly if it contains lists or dictionaries.
+~~For now this is using a bit of a hack, Terraform variables are populated in a Jinja2 template `files/terraform-var-file.j2`. This idea came from a GitHub issue with the Ansible Terraform module. You can't send an Ansible variable over and have it escaped correctly if it contains lists or dictionaries.~~
 
-[Source issue](https://github.com/ansible/ansible/issues/51687)
+~~[Source issue](https://github.com/ansible/ansible/issues/51687)~~
+
+I changed this to build out a custom Terraform HCL file for the nodes as I could not do a loop with the nodes module in Terraform and to keep it DRY, it made more sense to template the HCL file with Jinja2. This will be removed if they enable looping in Terraform for modules but so far it looks like it is a far off feature.
+
+[Source issue](https://github.com/hashicorp/terraform/issues/953)
+
+After running the Terraform apply or destroy, the custom file is removed to avoid secrets being left in plaintext.
+
+## Inventory
+
+The Ansible inventory has finally been moved to a proper dynamic script which loads the data from the Terraform group variables file and then generates an inventory for Ansible. This was another step to keep things DRY.
 
 ## Misc
 
@@ -20,3 +30,7 @@ Major tasks left:
 - [ ] Support remote state
 - [ ] Work out PanOS change management
 - [ ] Utilize netbox for variables for specific instances
+- [X] Switch to a dynamic inventory
+- [ ] Add RKE configs to build out the k8s cluster
+- [ ] Add PanOS configs for BGP with k8s cluster
+- [ ] Add MetalLB manifests for BGP with PanOS

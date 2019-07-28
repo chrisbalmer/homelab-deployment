@@ -4,8 +4,6 @@ terraform_variables:
   vsphere_password: "{{ lookup('onepassword', 'ops-vcenter-1', field='password', vault='homelab') }}"
   vsphere_server: "ops-vcenter-1.farm.oakops.io"
 
-dynamic_inventory_path: "./dynamic-inventory.yml"
-
 nodes:
   - name: "splunk-idx"
     count: 3

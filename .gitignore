@@ -1,4 +1,4 @@
 *.tfstate*
 .terraform/
 terraform/nodes.tf
-dynamic-inventory.yml
+.DS_Store
