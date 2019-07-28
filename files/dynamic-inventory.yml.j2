@@ -12,8 +12,9 @@
 {% endfor %}
 {% for group, members in groups.items() %}
 {{ group }}:
+  hosts:
 {% for member in members %}
-  {{ member }}:
+    {{ member }}:
 {% endfor %}
 
 {% endfor %}
