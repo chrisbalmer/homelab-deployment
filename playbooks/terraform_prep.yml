@@ -1,0 +1,17 @@
+- name: Terraform Prep
+  hosts: terraform
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Create provider folder
+      file:
+        path: "{{ terraform_provider_directory }}"
+        state: directory
+
+    - name: Add terraform providers
+      unarchive:
+        src: "{{ item.src }}"
+        dest: "{{ terraform_provider_directory }}"
+        creates: "{{ terraform_provider_directory }}/{{ item.creates }}"
+        remote_src: yes
+      with_items: "{{ terraform_providers }}" 

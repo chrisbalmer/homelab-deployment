@@ -130,3 +130,13 @@ resource "vsphere_compute_cluster_vm_anti_affinity_rule" "node_anti_affinity" {
   compute_cluster_id  = "${data.vsphere_compute_cluster.node_cluster.id}"
   virtual_machine_ids = "${vsphere_virtual_machine.nodes.*.id}"
 }
+
+resource "dns_a_record_set" "a_record" {
+  count     = "${var.node_count}"
+  zone      = "${var.node_domain_name}."
+  name      = "${var.node_prefix}${var.node_name}-${count.index}"
+  addresses = [ "${split("/", var.node_ips[count.index])[0]}" ]
+  ttl       = 3600
+}
+
+

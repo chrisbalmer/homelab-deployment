@@ -1,7 +1,11 @@
 ---
+- name: Prep terraform
+  import_playbook: playbooks/terraform_prep.yml
+
 - name: Build Out the Environment
   hosts: terraform
   connection: local
+  gather_facts: no
   tasks:
   - block:
     - name: Populate terraform nodes file

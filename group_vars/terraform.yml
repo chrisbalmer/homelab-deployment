@@ -1,12 +1,22 @@
+terraform_providers:
+  - src: https://github.com/yamamoto-febc/terraform-provider-rke/releases/download/0.14.0/terraform-provider-rke_0.14.0_linux-amd64.zip
+    creates: terraform-provider-rke_v0.14.0
+terraform_provider_directory: ~/.terraform.d/plugins/
 terraform_nodes_path: "./terraform/nodes.tf"
 terraform_variables:
+  dns_server: "{{ lookup('onepassword', 'IPA_TERRAFORM_DNS_KEY', field='server', vault='homelab') }}"
+  dns_key_name: "{{ lookup('onepassword', 'IPA_TERRAFORM_DNS_KEY', field='username', vault='homelab') }}"
+  dns_key_algorithm: "{{ lookup('onepassword', 'IPA_TERRAFORM_DNS_KEY', field='algorithm', vault='homelab') }}"
+  dns_key_secret: "{{ lookup('onepassword', 'IPA_TERRAFORM_DNS_KEY', field='password', vault='homelab') }}"
   vsphere_user: "{{ lookup('onepassword', 'ops-vcenter-1', field='username', vault='homelab') }}"
   vsphere_password: "{{ lookup('onepassword', 'ops-vcenter-1', field='password', vault='homelab') }}"
   vsphere_server: "ops-vcenter-1.farm.oakops.io"
 
+
 nodes:
   - name: "splunk-idx"
     count: 3
+    domain_name: farm.oakops.io
     cloud_user: "ansible"
     cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
     ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
@@ -31,6 +41,7 @@ nodes:
 
   - name: "splunk-mn"
     count: 1
+    domain_name: farm.oakops.io
     cloud_user: "ansible"
     cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
     ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
@@ -52,7 +63,8 @@ nodes:
       - splunk_mn
 
   - name: "splunk-sh"
-    count: 1
+    count: 3
+    domain_name: farm.oakops.io
     cloud_user: "ansible"
     cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
     ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
@@ -62,6 +74,8 @@ nodes:
     interface: "ens160"
     ips:
       - "172.21.14.205/24"
+      - "172.21.14.206/24"
+      - "172.21.14.207/24"
     gateway: "172.21.14.1"
     cloud_init: "true"
     cloud_init_custom: "false"
@@ -75,50 +89,7 @@ nodes:
 
   - name: "splunk-lic"
     count: 1
-    cloud_user: "ansible"
-    cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
-    ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
-    anti_affinity_enabled: "false"
-    network: "vlan14-servers"
-    template: "centos7-2019-06-13"
-    interface: "ens160"
-    ips:
-      - "172.21.14.206/24"
-    gateway: "172.21.14.1"
-    cloud_init: "true"
-    cloud_init_custom: "false"
-    cloud_config_template: "centos-cloud-config.tpl"
-    metadata_template: "centos-metadata.tpl"
-    network_config_template: "centos-network-config.tpl"
-    prefix: dev-
-    groups:
-      - splunk
-      - splunk_lic
-
-  - name: "splunk-mc"
-    count: 1
-    cloud_user: "ansible"
-    cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
-    ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
-    anti_affinity_enabled: "false"
-    network: "vlan14-servers"
-    template: "centos7-2019-06-13"
-    interface: "ens160"
-    ips:
-      - "172.21.14.207/24"
-    gateway: "172.21.14.1"
-    cloud_init: "true"
-    cloud_init_custom: "false"
-    cloud_config_template: "centos-cloud-config.tpl"
-    metadata_template: "centos-metadata.tpl"
-    network_config_template: "centos-network-config.tpl"
-    prefix: dev-
-    groups:
-      - splunk
-      - splunk_mc
-
-  - name: "splunk-ds"
-    count: 1
+    domain_name: farm.oakops.io
     cloud_user: "ansible"
     cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
     ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
@@ -137,10 +108,57 @@ nodes:
     prefix: dev-
     groups:
       - splunk
+      - splunk_lic
+
+  - name: "splunk-mc"
+    count: 1
+    domain_name: farm.oakops.io
+    cloud_user: "ansible"
+    cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
+    ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
+    anti_affinity_enabled: "false"
+    network: "vlan14-servers"
+    template: "centos7-2019-06-13"
+    interface: "ens160"
+    ips:
+      - "172.21.14.209/24"
+    gateway: "172.21.14.1"
+    cloud_init: "true"
+    cloud_init_custom: "false"
+    cloud_config_template: "centos-cloud-config.tpl"
+    metadata_template: "centos-metadata.tpl"
+    network_config_template: "centos-network-config.tpl"
+    prefix: dev-
+    groups:
+      - splunk
+      - splunk_mc
+
+  - name: "splunk-ds"
+    count: 1
+    domain_name: farm.oakops.io
+    cloud_user: "ansible"
+    cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
+    ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
+    anti_affinity_enabled: "false"
+    network: "vlan14-servers"
+    template: "centos7-2019-06-13"
+    interface: "ens160"
+    ips:
+      - "172.21.14.210/24"
+    gateway: "172.21.14.1"
+    cloud_init: "true"
+    cloud_init_custom: "false"
+    cloud_config_template: "centos-cloud-config.tpl"
+    metadata_template: "centos-metadata.tpl"
+    network_config_template: "centos-network-config.tpl"
+    prefix: dev-
+    groups:
+      - splunk
       - splunk_ds
 
   - name: "worker"
     count: 3
+    domain_name: farm.oakops.io
     ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
     anti_affinity_enabled: "true"
     network: "vlan2119-kubernetes"
@@ -163,6 +181,7 @@ nodes:
 
   - name: "controller"
     count: 3
+    domain_name: farm.oakops.io
     ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
     anti_affinity_enabled: "true"
     network: "vlan2119-kubernetes"
