@@ -1,17 +1,4 @@
 ansible_ssh_user: ansible
-
-splunk_product: splunk
-splunk_version: 7.2.6
-splunk_build: c0bf0f679ce9
-splunk_arch: x86_64
-
-# Linux Splunk arguments
-splunk_linux_filename: "splunk-{{ splunk_version }}-{{ splunk_build }}-Linux-{{ splunk_arch }}.tgz"
-splunk_linux_build_url: "https://download.splunk.com/products/{{ splunk_product }}/releases/{{ splunk_version }}/linux/{{ splunk_linux_filename }}"
-uf_linux_filename: "splunkforwarder-{{ splunk_version }}-{{ splunk_build }}-Linux-{{ splunk_arch }}.tgz"
-uf_linux_build_url: "https://download.splunk.com/products/universalforwarder/releases/{{ splunk_version }}/linux/{{ uf_linux_filename }}"
-# Windows Splunk arguments
-splunk_win_filename: "splunk-{{ splunk_version }}-{{ splunk_build }}-x64-release.msi"
-splunk_win_build_url: "https://download.splunk.com/products/{{ splunk_product }}/releases/{{ splunk_version }}/windows/{{ splunk_win_filename }}"
-uf_win_filename: "splunkforwarder-{{ splunk_version }}-{{ splunk_build }}-x64-release.msi"
-uf_win_build_url: "https://download.splunk.com/products/universalforwarder/releases/{{ splunk_version }}/windows/{{ uf_win_filename }}"
+splunk_installer: https://download.splunk.com/products/splunk/releases/7.3.1/linux/splunk-7.3.1-bd63e13aa157-Linux-x86_64.tgz
+splunk_login_user: "{{ lookup('onepassword', 'Splunk Cluster', field='username', vault='homelab') }}"
+splunk_login_pass: "{{ lookup('onepassword', 'Splunk Cluster', field='password', vault='homelab') }}"

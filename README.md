@@ -26,11 +26,14 @@ Still have a lot of cleanup of existing configs. Sprinkled some `TODO` comments 
 
 Major tasks left:
 
+- [X] Fix DNS on nodes when deploying, unsure if issue is in the image or the deployment
+    - Issue was due to missing the config in the network template for cloud-init
+- [X] Switch to a dynamic inventory
 - [ ] Support workspaces
 - [ ] Support remote state
 - [ ] Work out PanOS change management
 - [ ] Utilize netbox for variables for specific instances
-- [X] Switch to a dynamic inventory
 - [ ] Add RKE configs to build out the k8s cluster
 - [ ] Add PanOS configs for BGP with k8s cluster
 - [ ] Add MetalLB manifests for BGP with PanOS
+- [ ] Bootstrap initial accounts similar to [this reddit post](https://www.reddit.com/r/ansible/comments/cz3hxp/how_to_make_ansible_connect_as_root_using_a_ssh/eyvx6ar/)

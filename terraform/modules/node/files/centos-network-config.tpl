@@ -6,3 +6,6 @@ config:
     - type: static
       address: ${ip_address}
       gateway: ${gateway}
+      dns_nameservers: ${dns}
+      dns_search:
+        - ${domain_name}

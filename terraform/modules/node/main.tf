@@ -121,6 +121,8 @@ data "template_file" "network_config" {
     ip_address        = "${var.node_ips[count.index]}"
     gateway           = "${var.node_gateway}"
     network_interface = "${var.node_network_interface}"
+    dns               = "${jsonencode(split(",", var.node_dns))}"
+    domain_name       = "${var.node_domain_name}"
   }
 }
 
@@ -139,4 +141,15 @@ resource "dns_a_record_set" "a_record" {
   ttl       = 3600
 }
 
+# locals {
+#   count  = "${var.node_count}"
+#   octets = "${split(".", vsphere_virtual_machine.nodes.default_ip_address)}"
+# }
 
+# resource "dns_ptr_record" "dns-reverse" {
+#   count = "${var.node_count}"
+#   zone  = "${local.octets[2]}.${local.octets[1]}.${local.octets[0]}.in-addr.arpa."
+#   name  = "${local.octets[3]}"
+#   ptr   = "my-hostname.lab.gtu.floating.io."
+#   ttl   = 3600
+# }
