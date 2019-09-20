@@ -1,5 +1,5 @@
-- name: Splunk Deployment
-  hosts: splunk
+- name: Syslog Deployment
+  hosts: syslog
   become: yes
   gather_facts: no
   tasks:

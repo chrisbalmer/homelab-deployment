@@ -14,7 +14,7 @@ terraform_variables:
 
 
 nodes:
-  - name: "splunk-idx"
+  - name: "splidx"
     count: 3
     domain_name: farm.oakops.io
     cloud_user: "ansible"
@@ -34,12 +34,12 @@ nodes:
     cloud_config_template: "centos-cloud-config.tpl"
     metadata_template: "centos-metadata.tpl"
     network_config_template: "centos-network-config.tpl"
-    prefix: dev-
+    prefix: ops
     groups:
       - splunk
       - splunk_idx
 
-  - name: "splunk-mn"
+  - name: "splcm"
     count: 1
     domain_name: farm.oakops.io
     cloud_user: "ansible"
@@ -57,13 +57,14 @@ nodes:
     cloud_config_template: "centos-cloud-config.tpl"
     metadata_template: "centos-metadata.tpl"
     network_config_template: "centos-network-config.tpl"
-    prefix: dev-
+    prefix: ops
     groups:
       - splunk
-      - splunk_mn
+      - splunk_cm
 
-  - name: "splunk-sh"
+  - name: "splsh"
     count: 3
+    cpus: 4
     domain_name: farm.oakops.io
     cloud_user: "ansible"
     cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
@@ -82,12 +83,12 @@ nodes:
     cloud_config_template: "centos-cloud-config.tpl"
     metadata_template: "centos-metadata.tpl"
     network_config_template: "centos-network-config.tpl"
-    prefix: dev-
+    prefix: ops
     groups:
       - splunk
       - splunk_sh
 
-  - name: "splunk-lic"
+  - name: "spllic"
     count: 1
     domain_name: farm.oakops.io
     cloud_user: "ansible"
@@ -105,12 +106,12 @@ nodes:
     cloud_config_template: "centos-cloud-config.tpl"
     metadata_template: "centos-metadata.tpl"
     network_config_template: "centos-network-config.tpl"
-    prefix: dev-
+    prefix: ops
     groups:
       - splunk
       - splunk_lic
 
-  - name: "splunk-mc"
+  - name: "splmc"
     count: 1
     domain_name: farm.oakops.io
     cloud_user: "ansible"
@@ -128,12 +129,12 @@ nodes:
     cloud_config_template: "centos-cloud-config.tpl"
     metadata_template: "centos-metadata.tpl"
     network_config_template: "centos-network-config.tpl"
-    prefix: dev-
+    prefix: ops
     groups:
       - splunk
       - splunk_mc
 
-  - name: "splunk-ds"
+  - name: "splds"
     count: 1
     domain_name: farm.oakops.io
     cloud_user: "ansible"
@@ -151,10 +152,80 @@ nodes:
     cloud_config_template: "centos-cloud-config.tpl"
     metadata_template: "centos-metadata.tpl"
     network_config_template: "centos-network-config.tpl"
-    prefix: dev-
+    prefix: ops
     groups:
       - splunk
       - splunk_ds
+
+  - name: "splhwf"
+    count: 2
+    domain_name: farm.oakops.io
+    cloud_user: "ansible"
+    cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
+    ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
+    anti_affinity_enabled: "false"
+    network: "vlan14-servers"
+    template: "centos7-2019-06-13"
+    interface: "ens160"
+    ips:
+      - "172.21.14.211/24"
+      - "172.21.14.212/24"
+    gateway: "172.21.14.1"
+    cloud_init: "true"
+    cloud_init_custom: "false"
+    cloud_config_template: "centos-cloud-config.tpl"
+    metadata_template: "centos-metadata.tpl"
+    network_config_template: "centos-network-config.tpl"
+    prefix: ops
+    groups:
+      - splunk
+      - splunk_hwf
+
+  - name: "syslog"
+    count: 2
+    domain_name: farm.oakops.io
+    cloud_user: "ansible"
+    cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
+    ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
+    anti_affinity_enabled: "false"
+    network: "vlan14-servers"
+    template: "centos7-2019-06-13"
+    interface: "ens160"
+    ips:
+      - "172.21.14.213/24"
+      - "172.21.14.214/24"
+    gateway: "172.21.14.1"
+    cloud_init: "true"
+    cloud_init_custom: "false"
+    cloud_config_template: "centos-cloud-config.tpl"
+    metadata_template: "centos-metadata.tpl"
+    network_config_template: "centos-network-config.tpl"
+    prefix: ops
+    groups:
+      - syslog
+
+  - name: "lb"
+    count: 2
+    domain_name: farm.oakops.io
+    cloud_user: "ansible"
+    cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
+    ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
+    anti_affinity_enabled: "false"
+    network: "vlan14-servers"
+    template: "centos7-2019-06-13"
+    interface: "ens160"
+    ips:
+      - "172.21.14.215/24"
+      - "172.21.14.216/24"
+    gateway: "172.21.14.1"
+    cloud_init: "true"
+    cloud_init_custom: "false"
+    cloud_config_template: "centos-cloud-config.tpl"
+    metadata_template: "centos-metadata.tpl"
+    network_config_template: "centos-network-config.tpl"
+    prefix: ops
+    groups:
+      - loadbalancer
 
   - name: "worker"
     count: 3
@@ -174,7 +245,7 @@ nodes:
     cloud_config_template: "rancheros-cloud-config.tpl"
     cloud_config_guestinfo_path: "cloud-init.config.data"
     cloud_config_guestinfo_encoding_path: "cloud-init.data.encoding"
-    prefix: dev-
+    prefix: ops
     groups:
       - kubernetes
       - kubernetes_workers
@@ -197,7 +268,7 @@ nodes:
     cloud_config_template: "rancheros-cloud-config.tpl"
     cloud_config_guestinfo_path: "cloud-init.config.data"
     cloud_config_guestinfo_encoding_path: "cloud-init.data.encoding"
-    prefix: dev-
+    prefix: ops
     groups:
       - kubernetes
       - kubernetes_controllers

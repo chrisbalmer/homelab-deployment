@@ -4,6 +4,15 @@ module "{{ node.name }}" {
   vsphere_network         = "{{ node.network }}"
   vsphere_template        = "{{ node.template }}"
   node_count              = "{{ node.count }}"
+{% if node.cpus | default(0) %}
+  node_cpus               = "{{ node.cpus }}"
+{% endif %}
+{% if node.memory | default(0) %}
+  node_memory               = "{{ node.memory }}"
+{% endif %}
+{% if node.disk_size | default(0) %}
+  node_disk_size               = "{{ node.disk_size }}"
+{% endif %}
   node_initial_key        = "{{ node.ssh_public_key }}"
   node_name               = "{{ node.name }}"
   node_domain_name        = "{{ node.domain_name }}"

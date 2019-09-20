@@ -1,0 +1,6 @@
+- name: Load Balancer Deployment
+  hosts: loadbalancer
+  become: yes
+  gather_facts: no
+  tasks:
+    - ping:

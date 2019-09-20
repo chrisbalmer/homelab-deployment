@@ -29,7 +29,7 @@ data "vsphere_virtual_machine" "node_template" {
 
 resource "vsphere_virtual_machine" "nodes" {
   count            = "${var.node_count}"
-  name             = "${var.node_prefix}${var.node_name}-${count.index}"
+  name             = "${var.node_prefix}${var.node_name}${count.index}"
   datastore_id     = "${data.vsphere_datastore.node_datastore.id}"
   resource_pool_id = "${data.vsphere_resource_pool.node_pool.id}"
   num_cpus         = "${var.node_cpus}"
@@ -39,7 +39,7 @@ resource "vsphere_virtual_machine" "nodes" {
   annotation       = "Created on blah" #TODO: Add info here, date and source template
 
   disk {
-    label            = "${var.node_prefix}${var.node_name}-${count.index}.vmdk"
+    label            = "${var.node_prefix}${var.node_name}${count.index}.vmdk"
     size             = "${var.node_disk_size}"
     eagerly_scrub    = "${data.vsphere_virtual_machine.node_template.disks.0.eagerly_scrub}"
     thin_provisioned = "${data.vsphere_virtual_machine.node_template.disks.0.thin_provisioned}"
@@ -56,7 +56,7 @@ resource "vsphere_virtual_machine" "nodes" {
       for_each = var.cloud_init ? [] : [1]
       content {
         linux_options {
-          host_name = "${var.node_prefix}${var.node_name}-${count.index}"
+          host_name = "${var.node_prefix}${var.node_name}${count.index}"
           domain    = "${var.node_domain_name}"
         }
 
@@ -91,7 +91,7 @@ data "template_file" "userdata" {
   template = "${file("${path.module}/files/${var.cloud_config_template}")}"
 
   vars = {
-    hostname          = "${var.node_prefix}${var.node_name}-${count.index}"
+    hostname          = "${var.node_prefix}${var.node_name}${count.index}"
     ip_address        = "${var.node_ips[count.index]}"
     gateway           = "${var.node_gateway}"
     dns               = "${jsonencode(split(",", var.node_dns))}"
@@ -108,7 +108,7 @@ data "template_file" "metadata" {
   template = "${file("${path.module}/files/${var.metadata_template}")}"
 
   vars = {
-    hostname       = "${var.node_prefix}${var.node_name}-${count.index}"
+    hostname       = "${var.node_prefix}${var.node_name}${count.index}"
     network_config = "${base64encode("${data.template_file.network_config.*.rendered[count.index]}")}"
   }
 }
@@ -136,7 +136,7 @@ resource "vsphere_compute_cluster_vm_anti_affinity_rule" "node_anti_affinity" {
 resource "dns_a_record_set" "a_record" {
   count     = "${var.node_count}"
   zone      = "${var.node_domain_name}."
-  name      = "${var.node_prefix}${var.node_name}-${count.index}"
+  name      = "${var.node_prefix}${var.node_name}${count.index}"
   addresses = [ "${split("/", var.node_ips[count.index])[0]}" ]
   ttl       = 3600
 }

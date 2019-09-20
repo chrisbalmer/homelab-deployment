@@ -44,7 +44,7 @@ class TerraformInventory(object):
                     self.inventory[group] = {'hosts': [], 'vars': {}}
                 
                 for i in range(node['count']):
-                    self.inventory[group]['hosts'].append(node['prefix'] + node['name'] + '-' + str(i) + '.' + node['domain_name'])
+                    self.inventory[group]['hosts'].append(node['prefix'] + node['name'] + str(i) + '.' + node['domain_name'])
 
 # Get the inventory.
 TerraformInventory()

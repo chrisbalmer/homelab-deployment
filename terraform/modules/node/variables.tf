@@ -45,7 +45,7 @@ variable "node_name" {
 
 variable "node_disk_size" {
   description = "The size of the node disk drive in GB."
-  default     = "64"
+  default     = "30"
 }
 variable "node_ips" {
   description = "IP addresses to assign to the nodes."
