@@ -26,6 +26,9 @@
           path: "{{ terraform_nodes_path }}"
           state: absent
 
+- name: Base Node Setup
+  import_playbook: playbooks/base.yml
+
 - name: Load Balancer Configuration
   import_playbook: playbooks/loadbalancer.yml
 
