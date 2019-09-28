@@ -1,3 +1,13 @@
 ansible_ssh_user: ansible
 splunk_login_user: "{{ lookup('onepassword', 'Splunk Cluster', field='username', vault='homelab') }}"
 splunk_login_pass: "{{ lookup('onepassword', 'Splunk Cluster', field='password', vault='homelab') }}"
+
+
+# Will move to splunk-license role when created
+splunk_license: http://ops-mirror-1.farm.oakops.io/pub/Splunk.License
+splunk_update_license: no
+splunk_license_dest: /opt/Splunk.License
+splunk_license_master_uri: https://opsspllic0.farm.oakops.io:8089
+
+# Will copy to all roles as created
+splunk_home: /opt/splunk
