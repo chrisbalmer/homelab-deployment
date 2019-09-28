@@ -2,5 +2,5 @@
   hosts: splunk
   become: yes
   gather_facts: no
-  tasks:
-    - ping:
+  roles:
+    - chrisbalmer.splunk-installation

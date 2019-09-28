@@ -16,6 +16,7 @@ terraform_variables:
 nodes:
   - name: "splidx"
     count: 3
+    cpus: 4
     domain_name: farm.oakops.io
     cloud_user: "ansible"
     cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
