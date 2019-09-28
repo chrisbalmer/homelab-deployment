@@ -1,50 +1,6 @@
 - name: Splunk Deployment
   hosts: splunk
   become: yes
-  gather_facts: no
+  gather_facts: yes
   roles:
-    - chrisbalmer.splunk-installation
-
-# Will move to splunk-license role when created
-# TODO Add checks for settings to verify if changes are needed
-- name: Configure licenses
-  hosts: splunk
-  become: yes
-  gather_facts: no
-  handlers:
-    - name: Restart Splunk
-      service:
-        name: splunk
-        state: restarted
-  tasks:
-    - name: Download license for license master
-      get_url: 
-        url: "{{ splunk_license }}"
-        dest: "{{ splunk_license_dest }}"
-        mode: 0600
-        owner: splunk
-        group: splunk
-        force: "{{ splunk_update_license }}"
-      register: license_download
-      when: "'license_master' in splunk_roles|default([])"
-
-    - name: Install license for license master
-      command: "{{ splunk_home }}/bin/splunk add licenses {{ splunk_license_dest }} -auth {{ splunk_login_user }}:{{ splunk_login_pass }}"
-      become_user: splunk
-      when: "'license_master' in splunk_roles|default([]) and license_download.changed"
-      register: license_update
-      changed_when: '"restart" in license_update.stdout'
-      notify: Restart Splunk
-
-    - name: Configure license slaves
-      command: "{{ splunk_home }}/bin/splunk edit licenser-localslave -master_uri {{ splunk_license_master_uri }} -auth {{ splunk_login_user }}:{{ splunk_login_pass }}"
-      become_user: splunk
-      when: "'license_master' not in splunk_roles|default([])"
-      register: license_update
-      changed_when: '"restart" in license_update.stdout'
-      notify: Restart Splunk
-
-# Will move to splunk-dc role when created
-# - name: Configure
-# - name: Configure deployment client
-# sudo -H -u splunk /opt/splunk/bin/splunk set deploy-poll https://splunk-ds1:8089 -auth admin:mssp1234
+    - chrisbalmer.splunk
