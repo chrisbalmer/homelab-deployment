@@ -1,5 +1,35 @@
 ansible_ssh_user: ansible
 splunk_login_user: "{{ lookup('onepassword', 'Splunk Cluster', field='username', vault='homelab') }}"
 splunk_login_pass: "{{ lookup('onepassword', 'Splunk Cluster', field='password', vault='homelab') }}"
-splunk_key_general: "{{ lookup('onepassword', 'Splunk Cluster', field='pass4symmkey', vault='homelab') }}"
-splunk_ssl_password: "{{ lookup('onepassword', 'Splunk Cluster', field='sslpassword', vault='homelab') }}"
+splunk_hec_token: "{{ lookup('onepassword', 'Splunk Cluster', field='hec_token', vault='homelab') }}"
+splunk_idx_secret: "{{ lookup('onepassword', 'Splunk Cluster', field='idx_secret', vault='homelab') }}"
+splunk_shc_secret: "{{ lookup('onepassword', 'Splunk Cluster', field='shc_secret', vault='homelab') }}"
+splunk_site: site1
+splunk_all_sites: site1
+splunk_license_uri: http://ops-mirror-1.farm.oakops.io/pub/Splunk.License
+splunk_lm_url: opsspllic0.farm.oakops.io
+splunk_idx_url: opssplidx0.farm.oakops.io,opssplidx1.farm.oakops.io,opssplidx2.farm.oakops.io
+splunk_sh_url: opssplsh0.farm.oakops.io,opssplsh1.farm.oakops.io,opssplsh2.farm.oakops.io
+splunk_shc_url: opssplsh0.farm.oakops.io
+splunk_cm_url: opssplcm0.farm.oakops.io
+splunk_mscm: opssplcm0.farm.oakops.io
+splunk_dep_url: opsspldep0.farm.oakops.io
+splunk_ds: opssplds0.farm.oakops.io
+
+# Docker related
+pip_install_packages:
+  - name: docker
+  - name: docker-compose
+
+# Splunk Docker Values
+splunk_version: 7.3.1.1-redhat
+splunk_user: 41812
+splunk_group: 41812
+splunk_etc_volume: /mnt/splunk/etc
+splunk_etc_remote_volume: "172.21.14.36:/mnt/POOL_A/splunk/{{ ansible_fqdn }}/etc"
+splunk_var_volume: /mnt/splunk/var
+splunk_var_remote_volume: "172.21.14.36:/mnt/POOL_A/splunk/{{ ansible_fqdn }}/var"
+
+docker_user: "{{ lookup('onepassword', 'registry.farm.oakops.io', field='username', vault='homelab') }}"
+docker_pass: "{{ lookup('onepassword', 'registry.farm.oakops.io', field='password', vault='homelab') }}"
+docker_registry: registry.farm.oakops.io

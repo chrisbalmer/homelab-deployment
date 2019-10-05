@@ -29,6 +29,7 @@ Major tasks left:
 - [X] Fix DNS on nodes when deploying, unsure if issue is in the image or the deployment
     - Issue was due to missing the config in the network template for cloud-init
 - [X] Switch to a dynamic inventory
+- [ ] Support adding NFS shares to FreeNAS
 - [ ] Support workspaces
 - [ ] Support remote state
 - [ ] Work out PanOS change management

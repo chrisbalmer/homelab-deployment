@@ -1,4 +1,2 @@
 ---
-splunk_roles:
-  - license_master
-  - deployment_client
+splunk_role: splunk_license_master

@@ -2,5 +2,9 @@
   hosts: syslog
   become: yes
   gather_facts: no
-  tasks:
-    - ping:
+  pre_tasks:
+    - name: Test OP timeout
+      command: op list users
+      run_once: true
+      delegate_to: localhost
+      become: no

@@ -29,6 +29,9 @@
 - name: Base Node Setup
   import_playbook: playbooks/base.yml
 
+- name: Docker Node Setup
+  import_playbook: playbooks/docker.yml
+
 - name: Load Balancer Configuration
   import_playbook: playbooks/loadbalancer.yml
 

@@ -1,7 +1,7 @@
-- name: Base node setup
-  hosts: all:!localhost:!kubernetes
+- name: Docker Deployment
+  hosts: docker
   become: yes
-  gather_facts: no
+  gather_facts: yes
   pre_tasks:
     - name: Test OP timeout
       command: op list users
@@ -9,4 +9,6 @@
       delegate_to: localhost
       become: no
   roles:
-    - chrisbalmer.cloud-growpart
+    - geerlingguy.nfs
+    - geerlingguy.docker
+    - geerlingguy.pip

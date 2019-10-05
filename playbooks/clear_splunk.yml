@@ -1,0 +1,24 @@
+---
+- name: Cleanup Splunk
+  hosts: splunk
+  become: yes
+  gather_facts: yes
+  pre_tasks:
+    - name: Test OP timeout
+      command: op list users
+      run_once: true
+      delegate_to: localhost
+      become: no
+  tasks:
+    - name: Remove container
+      docker_container:
+        name: "{{ ansible_fqdn }}"
+        state: absent
+    - name: Clean var
+      shell: "rm -rf {{ splunk_var_volume }}/*"
+      args:
+        warn: false
+    - name: Clean etc
+      shell: "rm -rf {{ splunk_etc_volume }}/*"
+      args:
+        warn: false

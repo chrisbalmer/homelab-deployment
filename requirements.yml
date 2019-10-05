@@ -6,4 +6,16 @@
 - name: chrisbalmer.splunk
   scm: git
   src: git+https://github.com/chrisbalmer/ansible-role-splunk.git
-  version: move-license-to-conf
+  version: deploymentclient
+- name: geerlingguy.docker
+  scm: git
+  src: git+https://github.com/geerlingguy/ansible-role-docker.git
+  version: 2.5.3 
+- name: geerlingguy.pip
+  scm: git
+  src: git+https://github.com/geerlingguy/ansible-role-pip.git
+  version: 1.3.0
+- name: geerlingguy.nfs
+  scm: git
+  src: git+https://github.com/geerlingguy/ansible-role-nfs.git
+  version: 1.5.0

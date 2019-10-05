@@ -2,5 +2,109 @@
   hosts: splunk
   become: yes
   gather_facts: yes
-  roles:
-    - chrisbalmer.splunk
+  pre_tasks:
+    - name: Test OP timeout
+      command: op list users
+      run_once: true
+      delegate_to: localhost
+      become: no
+  tasks:
+    - name: Create etc mount path
+      file:
+        path: "{{ splunk_etc_volume }}"
+        state: directory
+    - name: Create var mount path
+      file:
+        path: "{{ splunk_var_volume }}"
+        state: directory
+    - name: Open rpcbind service ports
+      firewalld:
+        zone: public
+        service: rpc-bind
+        immediate: yes
+        permanent: yes
+        state: enabled
+    - name: Mount etc directory
+      mount:
+        path: "{{ splunk_etc_volume }}"
+        src: "{{ splunk_etc_remote_volume }}"
+        fstype: nfs
+        state: mounted
+    - name: Mount var directory
+      mount:
+        path: "{{ splunk_var_volume }}"
+        src: "{{ splunk_var_remote_volume }}"
+        fstype: nfs
+        state: mounted
+    - name: Create defaults directory
+      file:
+        path: /opt/splunk-defaults
+        state: directory
+    - name: Copy defaults
+      template:
+        src: templates/default.yml.j2
+        dest: /opt/splunk-defaults/default.yml
+    - name: Login to Docker
+      command: "docker login -u {{ docker_user }} -p {{ docker_pass }} {{ docker_registry }}"
+      when: docker_user|default() and docker_pass|default()
+    - name: Open Splunk ports
+      firewalld:
+        zone: public
+        port: "{{ item }}/tcp"
+        immediate: yes
+        permanent: yes
+        state: enabled
+      with_items:
+        - 8000
+        - 8089
+        - 8088
+        - 8191
+        - 9887
+        - 9997
+    - name: Deploy docker containers
+      docker_service:
+        project_name: splunk
+        definition:
+          version: '2'
+          services:
+            splunk:
+              image: "{{ docker_registry }}/splunk:{{ splunk_version }}"
+              command: start
+              hostname: "{{ ansible_fqdn }}"
+              container_name: "{{ ansible_fqdn }}"
+              environment:
+                - SPLUNK_START_ARGS=--accept-license
+                - "SPLUNK_ROLE={{ splunk_role }}"
+                - "SPLUNK_LICENSE_URI={{ splunk_license_uri }}"
+                - "SPLUNK_LICENSE_MASTER_URL={{ splunk_lm_url }}"
+                - "SPLUNK_INDEXER_URL={{ splunk_idx_url }}"
+                - "SPLUNK_SEARCH_HEAD_URL={{ splunk_sh_url }}"
+                - "SPLUNK_SEARCH_HEAD_CAPTAIN_URL={{ splunk_shc_url }}"
+                - "SPLUNK_DEPLOYER_URL={{ splunk_dep_url }}"
+                - "SPLUNK_CLUSTER_MASTER_URL={{ splunk_cm_url }}"
+                - "SPLUNK_MULTISITE_MASTER={{ splunk_mscm }}"
+                - "SPLUNK_DEPLOYMENT_SERVER={{ splunk_ds }}"
+                - "SPLUNK_SITE={{ splunk_site }}"
+                - "SPLUNK_ALL_SITES={{ splunk_all_sites }}"
+              restart: always
+              volumes:
+                - "{{ splunk_etc_volume }}:/opt/splunk/etc"
+                - "{{ splunk_var_volume }}:/opt/splunk/var"
+                - /opt/splunk-defaults:/tmp/defaults
+              ports:
+                - "8000:8000"
+                - "8089:8089"
+                - "8088:8088"
+                - "8191:8191"
+                - "9887:9887"
+                - "9997:9997"
+
+    # - name: Verify DB is running
+    #   assert:
+    #     that:
+    #       - "db.splunk_db_1.state.running"
+
+    # - name: Verify App is running
+    #   assert:
+    #     that:
+    #       - "app.splunk_app_1.state.running"

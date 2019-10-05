@@ -16,7 +16,7 @@ terraform_variables:
 nodes:
   - name: "splidx"
     count: 3
-    cpus: 4
+    cpus: 2
     domain_name: farm.oakops.io
     cloud_user: "ansible"
     cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
@@ -39,6 +39,7 @@ nodes:
     groups:
       - splunk
       - splunk_idx
+      - docker
 
   - name: "splcm"
     count: 1
@@ -62,10 +63,11 @@ nodes:
     groups:
       - splunk
       - splunk_cm
+      - docker
 
   - name: "splsh"
     count: 3
-    cpus: 4
+    cpus: 2
     domain_name: farm.oakops.io
     cloud_user: "ansible"
     cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
@@ -88,6 +90,7 @@ nodes:
     groups:
       - splunk
       - splunk_sh
+      - docker
 
   - name: "spllic"
     count: 1
@@ -111,6 +114,7 @@ nodes:
     groups:
       - splunk
       - splunk_lic
+      - docker
 
   - name: "splmc"
     count: 1
@@ -134,6 +138,7 @@ nodes:
     groups:
       - splunk
       - splunk_mc
+      - docker
 
   - name: "splds"
     count: 1
@@ -157,6 +162,7 @@ nodes:
     groups:
       - splunk
       - splunk_ds
+      - docker
 
   - name: "splhwf"
     count: 2
@@ -181,6 +187,31 @@ nodes:
     groups:
       - splunk
       - splunk_hwf
+      - docker
+
+  - name: "spldep"
+    count: 1
+    domain_name: farm.oakops.io
+    cloud_user: "ansible"
+    cloud_pass: "{{ lookup('onepassword', 'Splunk Instances', field='hashed_password', vault='homelab') }}"
+    ssh_public_key: "{{ lookup('onepassword', 'ops-workstation-1', section='PUBLIC', field='ssh_public_key', vault='homelab') }}"
+    anti_affinity_enabled: "false"
+    network: "vlan14-servers"
+    template: "centos7-2019-06-13"
+    interface: "ens160"
+    ips:
+      - "172.21.14.217/24"
+    gateway: "172.21.14.1"
+    cloud_init: "true"
+    cloud_init_custom: "false"
+    cloud_config_template: "centos-cloud-config.tpl"
+    metadata_template: "centos-metadata.tpl"
+    network_config_template: "centos-network-config.tpl"
+    prefix: ops
+    groups:
+      - splunk
+      - splunk_dep
+      - docker
 
   - name: "syslog"
     count: 2
